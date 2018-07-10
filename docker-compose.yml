@@ -10,11 +10,13 @@ services:
       - "6789:6789"
     networks:
       - operatorNetwork
+    restart: always
 
   redis:
     image: redis:alpine
     networks:
       - operatorNetwork
+    restart: always
 
 # Network
 networks:
