@@ -135,7 +135,7 @@ def dashboard():
 
     filaments = get_filaments()
     curfil = get_cur_filament()
-    curdt = datetime.now().isoformat().split(".")[0]
+    curdt = datetime.now().replace(tzinfo=pytz.UTC).isoformat().split(".")[0]
     return render_template('dashboard.html',  filaments=filaments, curfil=curfil, curdt=curdt)
 
 
@@ -310,7 +310,7 @@ def get_dt(request):
     dt = request.form.get('datetime', "")
 
     try:
-        validstring = parse(dt).isoformat()
+        validstring = parse(dt).replace(tzinfo=pytz.UTC).isoformat()
         return validstring
     except:
         return "invalid datetime"
