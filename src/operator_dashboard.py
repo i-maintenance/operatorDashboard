@@ -13,8 +13,8 @@ from confluent_kafka import Producer, KafkaError
 from logstash import TCPLogstashHandler
 
 
-__date__ = "7 June 2018"
-__version__ = "1.0"
+__date__ = "10 August 2018"
+__version__ = "1.1"
 __email__ = "christoph.schranz@salzburgresearch.at"
 __status__ = "Development"
 __desc__ = """This program a dashboard for operators of 3d printers."""
@@ -135,7 +135,7 @@ def dashboard():
 
     filaments = get_filaments()
     curfil = get_cur_filament()
-    curdt = datetime.now().isoformat().split(".")[0]
+    curdt = datetime.utcnow().replace(tzinfo=pytz.UTC).isoformat().split(".")[0]
     return render_template('dashboard.html',  filaments=filaments, curfil=curfil, curdt=curdt)
 
 
@@ -310,7 +310,7 @@ def get_dt(request):
     dt = request.form.get('datetime', "")
 
     try:
-        validstring = parse(dt).isoformat()
+        validstring = parse(dt).replace(tzinfo=pytz.UTC).isoformat()
         return validstring
     except:
         return "invalid datetime"
