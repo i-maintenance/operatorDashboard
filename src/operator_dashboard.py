@@ -45,9 +45,14 @@ logger.info('Added Logstash Logger for the operator Dashboard with loggername: {
 
 # Define Kafka Producer
 # topics and servers should be of the form: "topic1,topic2,..."
-KAFKA_TOPIC = "OperatorData"
-BOOTSTRAP_SERVERS = 'il061,il062,il063'
+KAFKA_TOPIC = "dtz.sensorthings"
+BOOTSTRAP_SERVERS = '192.168.48.81:9092,192.168.48.82:9092,192.168.48.83:9092'
 KAFKA_GROUP_ID = "operator-adapter"
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+datastream_file = os.path.join(dir_path, "app", "sensorthings", "sensorthings.json")
+with open(datastream_file) as ds_file:
+    DATASTREAM_MAPPING = json.load(ds_file)["Datastreams"]
 
 conf = {'bootstrap.servers': BOOTSTRAP_SERVERS}
 producer = Producer(**conf)
@@ -63,13 +68,14 @@ def publish_message(message):
     """
     try:
         producer.produce(KAFKA_TOPIC, json.dumps(message).encode('utf-8'),
-                         key=str(message['Datastream']['@iot.id']).encode('utf-8'))
+                        key=str(message['Datastream']['@iot.id']).encode('utf-8'))
         producer.poll(0)  # using poll(0), as Eden Hill mentions it avoids BufferError: Local: Queue full
         # producer.flush() poll should be faster here
         #
         # print("sent:", str(message), str(message['Datastream']['@iot.id']).encode('utf-8'))
-    except:
-        logger.exception("Exception while sending: {} \non kafka topic: {}".format(message, KAFKA_TOPIC))
+    except Exception as e:
+        logger.exception("Exception while sending: {} \non kafka topic: {} \n{}"
+                         .format(message, KAFKA_TOPIC, e))
 
 
 # http://0.0.0.0:6789/
@@ -93,45 +99,50 @@ def print_status():
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if request.method == 'POST':
-        message = dict({
-                'phenomenonTime': datetime.utcnow().replace(tzinfo=pytz.UTC).isoformat(),
-                'resultTime': datetime.utcnow().replace(tzinfo=pytz.UTC).isoformat()})
+        message = dict({'result': None, 'resultTime': datetime.utcnow()
+                       .replace(tzinfo=pytz.UTC).replace(microsecond=0).isoformat()})
 
         if "update_filament" in request.form:
-            filament = add_fil_change(request)
+            phenomenontime, filament = add_fil_change(request)
             if filament is None:
                 return abort(406)
             logger.info("Changed filament to {}".format(str(filament)))
             # message['result'] = 0
-            message['message'] = str(filament)
-            message['Datastream'] = dict({'@iot.id': 35})  # "3DPrinterFilamentChange"}})
+            message["phenomenonTime"] = phenomenontime
+            message['parameters'] = str(filament)
+            message['Datastream'] = dict({'@iot.id':
+                            DATASTREAM_MAPPING["prusa3d.filament.event.change"]["id"]})  # "3DPrinterFilamentChange"}})
             publish_message(message)
             return render_template('success-fil.html', filament=filament)
         elif "annotate_comment" in request.form:
-            processed_text = annotate_form(request)
-            if processed_text is None:
+            phenomenontime, event = annotate_form(request)
+            if event is None:
                 return abort(406)
-            logger.info("Added annotation with values: {}".format(processed_text))
+            logger.info("Added annotation with values: {}".format(event))
             # message['result'] = 0
-            message['message'] = processed_text
-            message['Datastream'] = dict({'@iot.id': 36})  # "3DPrintAnnotations"}})
+            message["phenomenonTime"] = phenomenontime
+            message['parameters'] = event
+            message['Datastream'] = dict({'@iot.id':
+                            DATASTREAM_MAPPING["prusa3d.print.event.annotation"]["id"]})  # "3DPrintAnnotations"}})
             publish_message(message)
             return render_template('success-ano.html',
-                                   text=processed_text)
+                                   text=event)
         elif "nozzle_cleaning" in request.form:
             # We already know that the nozzle was cleaned
-            ret = report_nozzle_cleaning(request)
-            if ret is None:
+            phenomenontime = report_nozzle_cleaning(request)
+            if phenomenontime is None:
                 return abort(406)
             logger.info("The nozzle was cleaned")
             # message['result'] = 0
-            message['message'] = "The nozzle was cleaned"
-            message['Datastream'] = dict({'@iot.id': 37})  # "3DPrinterNozzleCleansing"}})
+            message["phenomenonTime"] = phenomenontime
+            message['parameters'] = "The nozzle was cleaned"
+            message['Datastream'] = dict({'@iot.id':
+                            DATASTREAM_MAPPING["prusa3d.nozzle.event.cleaning"]["id"]})  # "3DPrinterNozzleCleansing"}})
             publish_message(message)
             return render_template('success-noz.html')
 
         else:
-            logger.info("Unknown exception")
+            logger.warning("Unknown request form")
 
     filaments = get_filaments()
     curfil = get_cur_filament()
@@ -215,7 +226,7 @@ def add_fil_change(req):
     with open(filepath, "w") as f:
         f.write(json.dumps(events, indent=2))
 
-    return filament
+    return dt, filament
 
 
 def get_cur_filament():
@@ -263,18 +274,13 @@ def annotate_form(req):
     else:
         events = dict({"data": list()})
 
-    event = {"datetime": dt,
-             "status": status,
+    event = {"status": status,
              "aborted": aborted,
              "annotation": text}
     events["data"].append(event)
-    processed_text = "Datetime: {}, Status: {}, Aborted: {}, Text: {}". \
-        format(dt, status, aborted, text)
-
     with open(filepath, "w") as f:
         f.write(json.dumps(events, indent=2))
-
-    return processed_text
+    return dt, event
 
 
 @app.route('/nozzle_cleanings')
@@ -304,6 +310,7 @@ def report_nozzle_cleaning(req):
     with open(filepath, "a+") as f:
         f.write(logline)
     return dt
+
 
 def get_dt(request):
     # dt_default = datetime.now().isoformat()
