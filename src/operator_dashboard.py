@@ -6,6 +6,7 @@ import pytz
 from datetime import datetime
 from dateutil.parser import parse
 from flask import Flask, jsonify, request, render_template, redirect, abort
+from flask_cors import CORS
 from redis import Redis
 
 # confluent_kafka is based on librdkafka, details in requirements.txt
@@ -30,6 +31,7 @@ path = os.sep.join(os.path.abspath(__file__).split(os.sep)[:-1])+os.sep+"app"
 
 # webservice setup
 app = Flask(__name__, template_folder=path)
+CORS(app)
 redis = Redis(host='redis', port=6379)
 
 # logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
