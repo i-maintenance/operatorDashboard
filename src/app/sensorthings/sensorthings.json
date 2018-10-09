@@ -1,13 +1,13 @@
 {
   "Things": {
-    "prusa3d": {"id": 1}
+    "ultimaker2": {"id": 1}
   },
   "Sensors": {
-    "prusa3d.operatordashboard": {"id": 6}
+    "3DPrintOperatorDashboard": {"id": 10}
   },
   "Datastreams": {
-    "prusa3d.filament.event.change": {"id": 10},
-    "prusa3d.print.event.annotation": {"id": 11},
-    "prusa3d.nozzle.event.cleaning": {"id": 12}
+    "3DPrinterFilamentChange": {"id": 35},
+    "3DPrintAnnotations": {"id": 36},
+    "3DPrinterNozzleCleansing": {"id": 37}
   }
 }

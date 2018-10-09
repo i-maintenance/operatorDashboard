@@ -24,14 +24,6 @@ http://il081:8084/v1.0/Things
       "specification": "https://www.prusa3d.com/downloads/manual/prusa3d_manual_175_en.pdf"
       }
 }
-
-{
-  "name": "Panda",
-  "description": "Franka Emika Panda robot in the Iot Lab Salzburg on the central desk",
-  "properties": {
-    "specification": "https://s3-eu-central-1.amazonaws.com/franka-de-uploads-staging/uploads/2018/05/2018-05-datasheet-panda.pdf"
-  }
-}
 ```
 
 ## Location
@@ -61,8 +53,8 @@ http://il081:8084/v1.0/Things(2)/Locations
 http://il081:8084/v1.0/Sensors
 ```
 {
-  "name": "operator input on the operator dashboard",
-  "description": "Input from the Prusa i3 3D Printer's operator Dashboard is streamed.",
+  "name": "operator input on the operator dashboard for the Ultimaker 2.",
+  "description": "Input from the Ultimaker 2 3D Printer's operator Dashboard is streamed.",
   "encodingType": "application/pdf",
   "metadata": "https://github.com/iot-salzburg/dtz_operator-dashboard"
 }
@@ -77,21 +69,21 @@ http://il081:8084/v1.0/Datastreams
 ```
 {
   "name": "Filament Change",
-  "description": "New Filament inserted into the Prusa 3D printer will be logged.",
+  "description": "New Filament inserted into the Ultimaker 2 3D printer will be logged.",
   "observationType": "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Observation",
   "unitOfMeasurement": {
     "name": "filament",
-    "symbol": "srfg.prusa3d.filament",
+    "symbol": "srfg.ultimaker2.filament",
     "definition": "string"
       },
   "Thing":{"@iot.id":1},
   "ObservedProperty":
       {
-      "name": "Prusa i3 Filament Change",
-      "description": "The Filament color and type of the Prusa i3 3D printer",
+      "name": "Ultimaker 2 Filament Change",
+      "description": "The Filament color and type of the Ultimaker 2 3D printer",
       "definition": "http://il081:6789/edit_filaments"
         },
-  "Sensor":{"@iot.id":6}
+  "Sensor":{"@iot.id":10}
 }
 
 
@@ -101,36 +93,36 @@ http://il081:8084/v1.0/Datastreams
   "observationType": "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Observation",
   "unitOfMeasurement": {
     "name": "print annotation",
-    "symbol": "srfg.prusa3d.annotation",
+    "symbol": "srfg.ultimaker2.annotation",
     "definition": "string"
   },
   "Thing":{"@iot.id":1},
   "ObservedProperty":
     {
-      "name": "Prusa i3 print annotation",
-      "description": "Observations of the printing result of the Prusa i3.",
-      "definition": "srfg.prusa3d.annotaion"
+      "name": "Ultimaker2 print annotation",
+      "description": "Observations of the printing result of the Ultimaker2.",
+      "definition": "srfg.ultimaker2.annotaion"
     },
-  "Sensor":{"@iot.id":6}
+  "Sensor":{"@iot.id":10}
 }
 
 {
   "name": "3D Print Nozzle Cleaning",
-  "description": "Nozzle cleaning event of the Prusa i3",
+  "description": "Nozzle cleaning event of the Ultimaker2",
   "observationType": "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Observation",
   "unitOfMeasurement": {
     "name": "nozzle cleaning",
-    "symbol": "srfg.prusa3d.nozzle-cleaning",
+    "symbol": "srfg.ultimaker2.nozzle-cleaning",
     "definition": "string"
   },
   "Thing":{"@iot.id":1},
   "ObservedProperty":
     {
-      "name": "Prusa i3 nozzle cleaning event",
-      "description": "Reported nozzle cleaning of the Prusa i3.",
-      "definition": "srfg.prusa3d.nozzle-cleaning"
+      "name": "Ultimaker2 nozzle cleaning event",
+      "description": "Reported nozzle cleaning of the Ultimaker2.",
+      "definition": "srfg.ultimaker2.nozzle-cleaning"
     },
-  "Sensor":{"@iot.id":6}
+  "Sensor":{"@iot.id":10}
 }
 ```
 
