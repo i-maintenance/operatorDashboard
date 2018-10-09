@@ -47,8 +47,8 @@ logger.info('Added Logstash Logger for the operator Dashboard with loggername: {
 
 # Define Kafka Producer
 # topics and servers should be of the form: "topic1,topic2,..."
-KAFKA_TOPIC = "dtz.sensorthings"
-BOOTSTRAP_SERVERS = '192.168.48.81:9092,192.168.48.82:9092,192.168.48.83:9092'
+KAFKA_TOPIC = "SensorData"
+BOOTSTRAP_SERVERS = '192.168.48.61:9092,192.168.48.62:9092,192.168.48.63:9092'
 KAFKA_GROUP_ID = "operator-adapter"
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
