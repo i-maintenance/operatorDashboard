@@ -14,19 +14,26 @@ from confluent_kafka import Producer, KafkaError
 from logstash import TCPLogstashHandler
 
 
-__date__ = "10 August 2018"
-__version__ = "1.1"
+__date__ = "9 October 2018"
+__version__ = "1.2"
 __email__ = "christoph.schranz@salzburgresearch.at"
 __status__ = "Development"
 __desc__ = """This program a dashboard for operators of 3d printers."""
 
-FILAMENTS = "filaments.json"
-PORT = 6789
+PORT = int(os.getenv("PORT", "6789"))
 
-LOGSTASH_HOST = os.getenv('LOGSTASH_HOST', 'iot86')  # TODO il060
+LOGSTASH_HOST = os.getenv('LOGSTASH_HOST', 'localhost')  # Using localhost if no host was found.
 LOGSTASH_PORT = int(os.getenv('LOGSTASH_PORT', '5000'))
 
+# Define Kafka Producer
+# topics and servers should be of the form: "topic1,topic2,..."
+KAFKA_TOPIC = "SensorData"
+BOOTSTRAP_SERVERS = '192.168.48.61:9092,192.168.48.62:9092,192.168.48.63:9092'
+KAFKA_GROUP_ID = "operator-adapter"
+
+
 # Creating dashboard
+FILAMENTS = "filaments.json"
 path = os.sep.join(os.path.abspath(__file__).split(os.sep)[:-1])+os.sep+"app"
 
 # webservice setup
@@ -45,11 +52,6 @@ logstash_handler = TCPLogstashHandler(host=LOGSTASH_HOST,
 logger.addHandler(logstash_handler)
 logger.info('Added Logstash Logger for the operator Dashboard with loggername: {}'.format(loggername))
 
-# Define Kafka Producer
-# topics and servers should be of the form: "topic1,topic2,..."
-KAFKA_TOPIC = "SensorData"
-BOOTSTRAP_SERVERS = '192.168.48.61:9092,192.168.48.62:9092,192.168.48.63:9092'
-KAFKA_GROUP_ID = "operator-adapter"
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 datastream_file = os.path.join(dir_path, "app", "sensorthings", "sensorthings.json")
@@ -74,7 +76,7 @@ def publish_message(message):
         producer.poll(0)  # using poll(0), as Eden Hill mentions it avoids BufferError: Local: Queue full
         # producer.flush() poll should be faster here
         #
-        # print("sent:", str(message), str(message['Datastream']['@iot.id']).encode('utf-8'))
+        print("sent:", str(message), str(message['Datastream']['@iot.id']).encode('utf-8'))
     except Exception as e:
         logger.exception("Exception while sending: {} \non kafka topic: {} \n{}"
                          .format(message, KAFKA_TOPIC, e))
