@@ -17,12 +17,26 @@ services:
     networks:
       - operatorNetwork
     restart: always
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
 
   redis:
     image: redis:alpine
     networks:
       - operatorNetwork
     restart: always
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
 # Network
 networks:
