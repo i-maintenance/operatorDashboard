@@ -30,9 +30,9 @@ http://il060:8082/v1.0/Things
 
 for each Thing:
 
-http://il061:8082/v1.0/Things(1)/Locations
+http://il060:8082/v1.0/Things(1)/Locations
 
-http://il061:8082/v1.0/Things(2)/Locations
+http://il060:8082/v1.0/Things(2)/Locations
 
 ```
 {
@@ -50,7 +50,7 @@ http://il061:8082/v1.0/Things(2)/Locations
 
 ## Sensor
 
-http://il061:8082/v1.0/Sensors
+http://il060:8082/v1.0/Sensors
 ```
 {
   "name": "operator input on the operator dashboard for the Ultimaker 2.",
@@ -63,7 +63,7 @@ http://il061:8082/v1.0/Sensors
 
 ## Datastreams with Observed Properties
 
-http://il061:8082/v1.0/Datastreams
+http://il060:8082/v1.0/Datastreams
 
 
 ```
@@ -130,5 +130,5 @@ http://il061:8082/v1.0/Datastreams
 
 # Getting corresponding datastreams:
 
-http://il061:8082/v1.0/Datastreams(10)?$expand=ObservedProperty
+http://il060:8082/v1.0/Datastreams(10)?$expand=ObservedProperty
 
