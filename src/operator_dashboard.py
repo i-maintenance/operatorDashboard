@@ -125,7 +125,7 @@ def dashboard():
             logger.info("Added annotation with values: {}".format(event))
             # message['result'] = 0
             message["phenomenonTime"] = phenomenontime
-            message['parameters'] = event
+            message['parameters'] = str(event)
             message['Datastream'] = dict({'@iot.id':
                             DATASTREAM_MAPPING["3DPrintAnnotations"]["id"]})  # "3DPrintAnnotations"}})
             publish_message(message)
