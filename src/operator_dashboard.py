@@ -14,7 +14,7 @@ from confluent_kafka import Producer, KafkaError
 from logstash import TCPLogstashHandler
 
 
-__date__ = "9 October 2018"
+__date__ = "15 October 2018"
 __version__ = "1.2"
 __email__ = "christoph.schranz@salzburgresearch.at"
 __status__ = "Development"
@@ -27,9 +27,9 @@ LOGSTASH_PORT = int(os.getenv('LOGSTASH_PORT', '5000'))
 
 # Define Kafka Producer
 # topics and servers should be of the form: "topic1,topic2,..."
-KAFKA_TOPIC = "SensorData"
-BOOTSTRAP_SERVERS = '192.168.48.61:9092,192.168.48.62:9092,192.168.48.63:9092'
-KAFKA_GROUP_ID = "operator-adapter"
+KAFKA_TOPIC = os.getenv('KAFKA_TOPIC', "SensorData")
+BOOTSTRAP_SERVERS = os.getenv('BOOTSTRAP_SERVERS', '192.168.48.61:9092,192.168.48.62:9092,192.168.48.63:9092')
+KAFKA_GROUP_ID = os.getenv('KAFKA_GROUP_ID', "operator-adapter")
 
 
 # Creating dashboard
@@ -76,7 +76,7 @@ def publish_message(message):
         producer.poll(0)  # using poll(0), as Eden Hill mentions it avoids BufferError: Local: Queue full
         # producer.flush() poll should be faster here
         #
-        print("sent:", str(message), str(message['Datastream']['@iot.id']).encode('utf-8'))
+        # print("sent:", str(message), str(message['Datastream']['@iot.id']).encode('utf-8'))
     except Exception as e:
         logger.exception("Exception while sending: {} \non kafka topic: {} \n{}"
                          .format(message, KAFKA_TOPIC, e))
